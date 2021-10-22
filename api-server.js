@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
 const authConfig = require("./src/auth_config.json");
+const db = require("./models");
 
 const app = express();
 
@@ -47,4 +48,8 @@ app.get("/api/external", checkJwt, (req, res) => {
   });
 });
 
-app.listen(port, () => console.log(`API Server listening on port ${port}`));
+db.sequelize
+  .sync()
+  .then(
+    app.listen(port, () => console.log(`API Server listening on port ${port}`))
+  );
