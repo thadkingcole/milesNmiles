@@ -8,14 +8,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Car.hasMany(models.Trip, {
+        foreignKey: {
+          allowNull: false,
+        },
+      });
     }
   }
   Car.init(
     {
+      make: { type: DataTypes.STRING, allowNull: false },
+      model: { type: DataTypes.STRING, allowNull: false },
+      year: {
+        type: DataTypes.DECIMAL(4).UNSIGNED,
+        allowNull: false,
+        validate: {
+          min: 1908, // year of the first Ford Model T
+        },
+      },
+      color: { type: DataTypes.STRING, allowNull: false },
       userid: { type: DataTypes.STRING, allowNull: false },
-      tripMiles: { type: DataTypes.FLOAT.UNSIGNED, allowNull: false },
-      odoMiles: { type: DataTypes.FLOAT.UNSIGNED, allowNull: false },
-      gallons: { type: DataTypes.FLOAT.UNSIGNED, allowNull: false },
     },
     {
       sequelize,

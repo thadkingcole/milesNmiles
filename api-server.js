@@ -48,8 +48,11 @@ app.get("/api/external", checkJwt, (req, res) => {
   });
 });
 
+require("./routes/db.js")(app);
+
 db.sequelize
-  .sync()
+  // force drops all tables before the model creates them
+  .sync({ force: process.env.API_PORT ? false : true })
   .then(
     app.listen(port, () => console.log(`API Server listening on port ${port}`))
   );
