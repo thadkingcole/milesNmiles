@@ -13,8 +13,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Trip.init(
     {
-      tripMiles: { type: DataTypes.FLOAT.UNSIGNED, allowNull: false },
-      odoMiles: { type: DataTypes.FLOAT.UNSIGNED, allowNull: false },
+      fillDay: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+        defaultValue: new Date(), // ? will this add date only?
+      },
+      odoMiles: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
       gallons: { type: DataTypes.FLOAT.UNSIGNED, allowNull: false },
     },
     {
