@@ -55,4 +55,8 @@ db.sequelize
   .sync({ force: process.env.API_PORT ? false : true })
   .then(
     app.listen(port, () => console.log(`API Server listening on port ${port}`))
-  );
+  ).catch(err => {
+    // common cause: MySQL server is not running
+    console.error(err.message, "\n\n\t...Is your MySQL server running?\n")
+    throw err
+  });
