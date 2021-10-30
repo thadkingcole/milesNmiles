@@ -2,8 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const helmet = require("helmet");
-const jwt = require("express-jwt");
-const jwksRsa = require("jwks-rsa");
 const authConfig = require("./src/auth_config.json");
 const db = require("./models");
 
@@ -28,35 +26,20 @@ if (
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors({ origin: appOrigin }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const checkJwt = jwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://${authConfig.domain}/.well-known/jwks.json`,
-  }),
-
-  audience: authConfig.audience,
-  issuer: `https://${authConfig.domain}/`,
-  algorithms: ["RS256"],
-});
-
-app.get("/api/external", checkJwt, (req, res) => {
-  res.send({
-    msg: "Your access token was successfully validated!",
-  });
-});
-
-require("./routes/db.js")(app);
+require("./routes/api-routes.js")(app);
 
 db.sequelize
-  // force drops all tables before the model creates them
-  .sync({ force: process.env.API_PORT ? false : true })
+  // ! alter will update tables to match the models
+  // ! drop: false will prevent drop statements while altering a table
+  .sync({ alter: { drop: false } })
   .then(
     app.listen(port, () => console.log(`API Server listening on port ${port}`))
-  ).catch(err => {
+  )
+  .catch((err) => {
     // common cause: MySQL server is not running
-    console.error(err.message, "\n\n\t...Is your MySQL server running?\n")
-    throw err
+    console.error(err.message, "\n\n\t...Is your MySQL server running?\n");
+    throw err;
   });
