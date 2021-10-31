@@ -68,4 +68,22 @@ module.exports = (app) => {
     }
     res.status(201).end();
   });
+
+  // get all a user's cars/trips
+  app.get("/api/cars/trips", checkJwt, async (req, res) => {
+    let cars; // all cars that belong to the user
+    try {
+      cars = await Car.findAll({ where: { userId: req.user.sub } });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+    const carIds = cars.map((car) => car.dataValues.id);
+    let trips; // all trips that belong to the user's cars
+    try {
+      trips = await Trip.findAll({ where: { CarId: carIds } });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+    res.status(200).json(trips);
+  });
 };
