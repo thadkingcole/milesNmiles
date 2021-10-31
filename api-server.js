@@ -32,9 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 require("./routes/api-routes.js")(app);
 
 db.sequelize
-  // ! alter will update tables to match the models
-  // ! drop: false will prevent drop statements while altering a table
-  .sync({ alter: { drop: false } })
+  .sync({ force: true })
   .then(
     app.listen(port, () => console.log(`API Server listening on port ${port}`))
   )

@@ -24,10 +24,21 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           min: 1908, // year of the first Ford Model T
+          max: new Date().getFullYear() + 1, // highest model year available
         },
       },
       color: { type: DataTypes.STRING, allowNull: false },
-      userid: { type: DataTypes.STRING, allowNull: false },
+      userId: { type: DataTypes.STRING, allowNull: false },
+      startDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+        defaultValue: new Date(),
+      },
+      startOdo: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+      },
     },
     {
       sequelize,
