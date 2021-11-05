@@ -16,6 +16,19 @@ const checkJwt = jwt({
   algorithms: ["RS256"],
 });
 
+async function validateCarAccess(req, res) {
+  // validate user has access to car
+  try {
+    // get car being requested for adding trip
+    const tripCar = await Car.findByPk(req.body.CarId);
+    tripCar || res.status(404).end(); // car not found
+    // car does not belong to user - forbidden
+    tripCar.dataValues.userId !== req.user.sub && res.status(403).end();
+  } catch (err) {
+    res.status(500).json(err);
+  }
+}
+
 module.exports = (app) => {
   // test external API connection with auth0 bearer token
   app.get("/api/external", checkJwt, (req, res) => {
@@ -44,17 +57,7 @@ module.exports = (app) => {
 
   // create a trip for a user's car
   app.post("/api/trip", checkJwt, async (req, res) => {
-    // validate user has access to car
-    try {
-      // get car being requested for adding trip
-      const tripCar = await Car.findByPk(req.body.CarId);
-      tripCar || res.status(404).end(); // car not found
-      // car does not belong to user - forbidden
-      tripCar.dataValues.userId !== req.user.sub && res.status(403).end();
-    } catch (err) {
-      res.status(500).json(err);
-    }
-
+    await validateCarAccess(req, res);
     // create the trip
     try {
       await Trip.create({
@@ -68,6 +71,8 @@ module.exports = (app) => {
     }
     res.status(201).end();
   });
+
+  // TODO create a batch of trips from a csv file
 
   // get all a user's cars/trips
   app.get("/api/cars/trips", checkJwt, async (req, res) => {
@@ -85,5 +90,55 @@ module.exports = (app) => {
       res.status(500).json(err);
     }
     res.status(200).json(trips);
+  });
+
+  // update user's car info
+  app.put("api/car", checkJwt, async (req, res) => {
+    await validateCarAccess(req, res);
+    // update car info
+    try {
+      // req.body should have all fields requiring update
+      await Car.update(req.body, { where: { id: req.body.CarId } });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+    res.status(200).end();
+  });
+
+  // update a trip
+  app.put("api/trip", checkJwt, async (req, res) => {
+    await validateCarAccess(req, res);
+    //update trip info
+    try {
+      //req.body should have all fields requiring update
+      await Trip.update(req.body, { where: { id: req.body.tripId } });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+    res.status(200).end();
+  });
+
+  // delete a car
+  app.delete("api/car", checkJwt, async (req, res) => {
+    await validateCarAccess(req, res);
+    // delete car
+    try {
+      await Car.destroy({ where: { id: req.body.CarId } });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+    res.status(200).end();
+  });
+
+  // delete a trip
+  app.delete("api/trip", checkJwt, async (req, res) => {
+    await validateCarAccess(req, res);
+    // delete trip
+    try {
+      await Trip.destroy({ where: { id: req.body.tripId } });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+    res.status(200).end();
   });
 };
