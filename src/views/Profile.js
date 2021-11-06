@@ -1,19 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "reactstrap";
-import axios from "axios";
-import Loading from "../components/Loading";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import { getConfig } from "../config";
+import Loading from "../components/Loading";
 
 export const ProfileComponent = () => {
-  const [items, setItems] = useState([]);
+  const [error, setError] = useState(null);
+  const [cars, setCars] = useState([]);
+  const [trips, setTrips] = useState([]);
+
+  const { getAccessTokenSilently } = useAuth0();
 
   /* 
   Note: the empty deps array [] means this useEffect will run once similar to 
   componentDidMount()
   */
   useEffect(() => {
-    axios.get("/api/cars/trips").then((res) => setItems(res));
-  }, []);
+    const { apiOrigin = "http://localhost:3001" } = getConfig();
+    async function fetchData() {
+      try {
+        const token = await getAccessTokenSilently();
+        const response = await fetch(`${apiOrigin}/api/cars/trips`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const responseData = await response.json();
+        setCars(responseData.cars);
+        setTrips(responseData.trips);
+      } catch (err) {
+        setError({ err });
+        console.log(err);
+      }
+    }
+    fetchData();
+  }, [getAccessTokenSilently]);
   const { user } = useAuth0();
 
   return (
@@ -32,9 +53,20 @@ export const ProfileComponent = () => {
         </Col>
       </Row>
       <Row>
-        <Col>
-          <p>{useEffect}</p>
-        </Col>
+        {/* car columns */}
+        {cars ? (
+          cars.map((car) => {
+            return (
+              <Col className="text-capitalize" key={car.id}>
+                {car.year} {car.color} {car.make} {car.model}
+              </Col>
+            );
+          })
+        ) : (
+          <>there are no cars</>
+        )}
+        {/* car info below each car */}
+        {/* trip graph below the car info */}
       </Row>
     </Container>
   );

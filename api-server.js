@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 require("./routes/api-routes.js")(app);
 
 db.sequelize
-  .sync({ force: true })
+  .sync({ alter: { drop: false } })
   .then(
     app.listen(port, () => console.log(`API Server listening on port ${port}`))
   )

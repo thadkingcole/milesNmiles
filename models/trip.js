@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       fillDay: {
         type: DataTypes.DATEONLY,
         allowNull: false,
-        defaultValue: new Date(), // ? will this add date only?
+        defaultValue: new Date(),
       },
       odoMiles: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
       gallons: { type: DataTypes.FLOAT.UNSIGNED, allowNull: false },
