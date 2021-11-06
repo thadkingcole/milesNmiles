@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "reactstrap";
-
-import Highlight from "../components/Highlight";
+import axios from "axios";
 import Loading from "../components/Loading";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 
 export const ProfileComponent = () => {
+  const [items, setItems] = useState([]);
+
+  /* 
+  Note: the empty deps array [] means this useEffect will run once similar to 
+  componentDidMount()
+  */
+  useEffect(() => {
+    axios.get("/api/cars/trips").then((res) => setItems(res));
+  }, []);
   const { user } = useAuth0();
 
   return (
@@ -24,7 +32,9 @@ export const ProfileComponent = () => {
         </Col>
       </Row>
       <Row>
-        <Highlight>{JSON.stringify(user, null, 2)}</Highlight>
+        <Col>
+          <p>{useEffect}</p>
+        </Col>
       </Row>
     </Container>
   );
