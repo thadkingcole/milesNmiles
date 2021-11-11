@@ -5,6 +5,7 @@ import {
   faUser,
   faCar,
   faRoad,
+  faGasPump,
 } from "@fortawesome/free-solid-svg-icons";
 
 function initFontAwesome() {
@@ -13,6 +14,7 @@ function initFontAwesome() {
   library.add(faPowerOff);
   library.add(faCar);
   library.add(faRoad);
+  library.add(faGasPump)
 }
 
 export default initFontAwesome;

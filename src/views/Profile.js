@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col } from "reactstrap";
+import { Container, Row, Col, Button } from "reactstrap";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { getConfig } from "../config";
 import Loading from "../components/Loading";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const ProfileComponent = () => {
   const [error, setError] = useState(null);
@@ -48,8 +49,18 @@ export const ProfileComponent = () => {
           />
         </Col>
         <Col md>
-          <h2>{user.name}</h2>
-          <p className="lead text-muted">{user.email}</p>
+          <h2>{user.name}'s Garage</h2>
+          <p className="lead text-muted">Welcome!</p>
+        </Col>
+        <Col md="auto">
+          <Button color="success">
+            <FontAwesomeIcon icon="gas-pump" /> Log Trip
+          </Button>
+        </Col>
+        <Col md="auto">
+          <Button color="warning">
+            <FontAwesomeIcon icon="car" /> New Car
+          </Button>
         </Col>
       </Row>
       <Row>
@@ -58,15 +69,23 @@ export const ProfileComponent = () => {
           cars.map((car) => {
             return (
               <Col className="text-capitalize" key={car.id}>
-                {car.year} {car.color} {car.make} {car.model}
+                <Row>
+                  {car.year} {car.color} {car.make} {car.model}
+                </Row>
+                {trips
+                  .filter((trip) => trip.CarId === car.id)
+                  .map((trip) => (
+                    <Row key={trip.id}>
+                      {trip.fillDay} {trip.odoMiles} {trip.gallons}{" "}
+                      {trip.comments}
+                    </Row>
+                  ))}
               </Col>
             );
           })
         ) : (
-          <>there are no cars</>
+          <> no cars</>
         )}
-        {/* car info below each car */}
-        {/* trip graph below the car info */}
       </Row>
     </Container>
   );
