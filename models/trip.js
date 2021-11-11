@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       odoMiles: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
       gallons: { type: DataTypes.FLOAT.UNSIGNED, allowNull: false },
+      comments: { type: DataTypes.STRING },
     },
     {
       sequelize,
