@@ -4,11 +4,17 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { getConfig } from "../config";
 import Loading from "../components/Loading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import TripForm from "../components/TripForm";
+import CarForm from "../components/CarForm";
 
 export const ProfileComponent = () => {
   const [error, setError] = useState(null);
   const [cars, setCars] = useState([]);
   const [trips, setTrips] = useState([]);
+  const [forms, setForms] = useState({
+    trip: false,
+    car: false,
+  });
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -38,6 +44,10 @@ export const ProfileComponent = () => {
   }, [getAccessTokenSilently]);
   const { user } = useAuth0();
 
+  const showTripForm = () => setForms({ trip: true, car: false });
+  const showCarForm = () => setForms({ trip: false, car: true });
+  const removeForms = () => setForms({ trip: false, car: false });
+
   return (
     <Container className="mb-5">
       <Row className="align-items-center profile-header mb-5 text-center text-md-left">
@@ -53,16 +63,29 @@ export const ProfileComponent = () => {
           <p className="lead text-muted">Welcome!</p>
         </Col>
         <Col md="auto">
-          <Button color="success">
+          <Button color="success" onClick={showTripForm}>
             <FontAwesomeIcon icon="gas-pump" /> Log Trip
           </Button>
         </Col>
         <Col md="auto">
-          <Button color="warning">
+          <Button color="warning" onClick={showCarForm}>
             <FontAwesomeIcon icon="car" /> New Car
           </Button>
         </Col>
       </Row>
+      {/* either show the trip form or car form if user has clicked */}
+      {(forms.trip && (
+        <Row>
+          <TripForm />
+          <Button close onClick={removeForms} />
+        </Row>
+      )) ||
+        (forms.car && (
+          <Row>
+            <CarForm />
+            <Button close onClick={removeForms} />
+          </Row>
+        ))}
       <Row>
         {/* car columns */}
         {cars ? (
