@@ -8,7 +8,6 @@ import TripForm from "../components/TripForm";
 import CarForm from "../components/CarForm";
 
 export const ProfileComponent = () => {
-  const [error, setError] = useState(null);
   const [cars, setCars] = useState([]);
   const [trips, setTrips] = useState([]);
   const [forms, setForms] = useState({
@@ -25,28 +24,22 @@ export const ProfileComponent = () => {
   useEffect(() => {
     const { apiOrigin = "http://localhost:3001" } = getConfig();
     async function fetchData() {
-      try {
-        const token = await getAccessTokenSilently();
-        const response = await fetch(`${apiOrigin}/api/cars/trips`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const responseData = await response.json();
-        setCars(responseData.cars);
-        setTrips(responseData.trips);
-      } catch (err) {
-        setError({ err });
-        console.log(err);
-      }
+      const token = await getAccessTokenSilently();
+      const response = await fetch(`${apiOrigin}/api/cars/trips`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const responseData = await response.json();
+      setCars(responseData.cars);
+      setTrips(responseData.trips);
     }
     fetchData();
   }, [getAccessTokenSilently]);
   const { user } = useAuth0();
 
-  const showTripForm = () => setForms({ trip: true, car: false });
-  const showCarForm = () => setForms({ trip: false, car: true });
-  const removeForms = () => setForms({ trip: false, car: false });
+  const showTripForm = () => setForms({ trip: !forms.trip, car: false });
+  const showCarForm = () => setForms({ trip: false, car: !forms.car });
 
   return (
     <Container className="mb-5">
@@ -74,18 +67,18 @@ export const ProfileComponent = () => {
         </Col>
       </Row>
       {/* either show the trip form or car form if user has clicked */}
-      {(forms.trip && (
-        <Row>
-          <TripForm />
-          <Button close onClick={removeForms} />
-        </Row>
-      )) ||
-        (forms.car && (
-          <Row>
-            <CarForm />
-            <Button close onClick={removeForms} />
-          </Row>
-        ))}
+      <Row>
+        {(forms.trip && (
+          <Col>
+            <TripForm />
+          </Col>
+        )) ||
+          (forms.car && (
+            <Col>
+              <CarForm />
+            </Col>
+          ))}
+      </Row>
       <Row>
         {/* car columns */}
         {cars ? (
