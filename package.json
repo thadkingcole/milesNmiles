@@ -34,7 +34,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.0",
     "reactstrap": "^8.0.0",
-    "sequelize": "^6.7.0"
+    "sequelize": "^6.28.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.10.1",
